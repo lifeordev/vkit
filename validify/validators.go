@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/mail"
 	"regexp"
+	"strings"
 )
 
 func NotEmpty(value string) (ValidationError, RuntimeError) {
@@ -43,6 +44,27 @@ func MaxLength(length int) ValidationRule[string] {
 	}
 }
 
+func OneOf(values []string) ValidationRule[string] {
+	return func(value string) (ValidationError, RuntimeError) {
+		for _, v := range values {
+			if v == value {
+				return nil, nil
+			}
+		}
+		return fmt.Errorf("value must be one of %s", strings.Join(values, ", ")), nil
+	}
+}
+
+func Regex(regex regexp.Regexp) ValidationRule[string] {
+	return func(value string) (ValidationError, RuntimeError) {
+		if !regex.MatchString(value) {
+			return errors.New("does not match pattern"), nil
+		}
+		return nil, nil
+	}
+}
+
+// Integer
 func Min(min int) ValidationRule[int] {
 	return func(value int) (ValidationError, RuntimeError) {
 		if value < min {
