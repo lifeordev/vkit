@@ -1,5 +1,10 @@
 package option
 
+import (
+	"encoding/json"
+	"reflect"
+)
+
 // Option represents an optional value.
 type Option[T any] struct {
 	value  T
@@ -28,12 +33,13 @@ func (o Option[T]) IsNone() bool {
 }
 
 // returns the value and a boolean indicating whether the value is present
-func (o Option[T]) Value() (T, bool) {
+// recommended way to extract value
+func (o Option[T]) Unwrap() (T, bool) {
 	return o.value, o.isSome
 }
 
 // Unwrap returns the value if present, or panics if not.
-func (o Option[T]) Unwrap() T {
+func (o Option[T]) ForceUnwrap() T {
 	if !o.isSome {
 		panic("called Unwrap on a None value")
 	}
@@ -54,4 +60,57 @@ func (o Option[T]) UnwrapOrElse(defaultFunc func() T) T {
 		return defaultFunc()
 	}
 	return o.value
+}
+
+func (o Option[_]) MarshalJSON() ([]byte, error) {
+	if o.isSome {
+		return json.Marshal(o.value)
+	} else {
+		return []byte("null"), nil
+	}
+}
+
+func (o *Option[_]) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		o.isSome = false
+
+		return nil
+	}
+
+	err := json.Unmarshal(data, &o.value)
+
+	if err != nil {
+		return err
+	}
+
+	o.isSome = true
+
+	return nil
+}
+
+// Checks if a given value is of type Option
+func IsOption(v interface{}) bool {
+	t := reflect.TypeOf(v)
+	if t != nil && t.Name() == "Option" {
+		return true
+	}
+	return false
+}
+
+// Checks if a field inside a struct is of type Option
+func IsFieldOfTypeOption(v interface{}, field string) bool {
+	val := reflect.ValueOf(v)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+	if val.Kind() != reflect.Struct {
+		return false
+	}
+	fieldVal := val.FieldByName(field)
+	if !fieldVal.IsValid() {
+		return false
+	}
+
+	fieldType := fieldVal.Type()
+	return fieldType.Name() == "Option"
 }
