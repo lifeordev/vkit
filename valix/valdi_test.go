@@ -1,4 +1,4 @@
-package validify
+package valdi
 
 import (
 	"testing"
