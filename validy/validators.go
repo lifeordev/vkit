@@ -14,6 +14,15 @@ func NotEmpty(value string) (*ValidationError, RuntimeError) {
 	return nil, nil
 }
 
+func RunIf[T any](runIf bool, rule ValidationRule[T]) ValidationRule[T] {
+	if runIf {
+		return rule
+	}
+	return func(value T) (*ValidationError, RuntimeError) {
+		return nil, nil
+	}
+}
+
 func IsEmail(value string) (*ValidationError, RuntimeError) {
 	_, err := mail.ParseAddress(value)
 	// ParseAddress allows local domains, so we need to invalidate them additionally
