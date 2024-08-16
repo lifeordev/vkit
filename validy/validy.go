@@ -1,4 +1,4 @@
-package valdi
+package validy
 
 import "github.com/lifeordev/vkit/option"
 
