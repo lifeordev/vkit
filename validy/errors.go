@@ -1,4 +1,4 @@
-package valdi
+package validy
 
 type ValidationError struct {
 	Code    string
