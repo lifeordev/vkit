@@ -1,8 +1,8 @@
 package validy
 
 type ValidationError struct {
-	Code    string
-	Message string
+	Code    string `json:"code"`
+	Message string `json:"message"`
 }
 
 func (e *ValidationError) Error() string {
