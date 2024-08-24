@@ -31,7 +31,9 @@ func AggregateFieldValidation(results ...FieldValidationResult) (ValidationAggre
 		if fieldResult.RuntimeError != nil {
 			return aggregate, fieldResult.RuntimeError
 		}
-		aggregate.ValidationErrors[fieldResult.Field] = *fieldResult.ValidationError
+		if fieldResult.ValidationError != nil {
+			aggregate.ValidationErrors[fieldResult.Field] = *fieldResult.ValidationError
+		}
 	}
 	return aggregate, nil
 }
