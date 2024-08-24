@@ -47,10 +47,13 @@ func ValidateField[T any](field string, value T, rules ...ValidationRule[T]) Fie
 
 	for _, rule := range rules {
 		vErr, err := rule(value)
-		if err != nil || vErr != nil {
-			// Exit on first Error, no need to execute any other validators
-			result.RuntimeError = err
+		if vErr != nil {
 			result.ValidationError = vErr
+		}
+		if err != nil {
+			result.RuntimeError = err
+		}
+		if err != nil || vErr != nil {
 			return result
 		}
 	}
@@ -73,10 +76,13 @@ func ValidateOptionField[T any](field string, optionValue option.Option[T], rule
 
 	for _, rule := range rules {
 		vErr, err := rule(value)
-		if err != nil || vErr != nil {
-			// Exit on first Error, no need to execute any other validators
-			result.RuntimeError = err
+		if vErr != nil {
 			result.ValidationError = vErr
+		}
+		if err != nil {
+			result.RuntimeError = err
+		}
+		if err != nil || vErr != nil {
 			return result
 		}
 	}
