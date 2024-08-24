@@ -33,15 +33,17 @@ func TestIsEmail(t *testing.T) {
 	}
 }
 
-func TestIf(t *testing.T) {
-	shouldError := ValidateField("tIf", "", RunIf(true, NotEmpty))
-	if len(shouldError.ValidationErrors) != 1 {
-		t.Errorf("TestIf ShouldError expected 1 Validation Error. Got %d", len(shouldError.ValidationErrors))
+func TestWhen(t *testing.T) {
+	whenTrue := func(v string) bool { return true }
+	shouldError := ValidateField("tIf", "", When(whenTrue, NotEmpty))
+	if shouldError.ValidationError == nil {
+		t.Errorf("TestIf ShouldError expected a Validation Error.")
 	}
 
-	shouldntError := ValidateField("tIf", "", RunIf(false, NotEmpty))
-	if len(shouldntError.ValidationErrors) != 0 {
-		t.Errorf("TestIf ShouldntError expected 0 Validation Error. Got %d", len(shouldntError.ValidationErrors))
+	whenFalse := func(v string) bool { return false }
+	shouldntError := ValidateField("tIf", "", When(whenFalse, NotEmpty))
+	if shouldntError.ValidationError != nil {
+		t.Errorf("TestIf ShouldntError expected no Validation Error. Got: %s", shouldntError.ValidationError.Message)
 	}
 }
 

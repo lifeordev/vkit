@@ -31,3 +31,18 @@ var (
 	FailMin              = invalid{"min.invalid", "must be at least %d."}
 	FailMax              = invalid{"max.invalid", "must not exceed %d."}
 )
+
+// Runtime Error
+type RuntimeError struct {
+	Message string
+}
+
+func (e *RuntimeError) Error() string {
+	return e.Message
+}
+
+func NewRuntimeError(message string) *RuntimeError {
+	return &RuntimeError{
+		Message: message,
+	}
+}
